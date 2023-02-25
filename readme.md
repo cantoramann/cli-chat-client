@@ -6,15 +6,18 @@ The client application for CLI chat application.
 
 ```bash
 git clone
-
-# make sure you have NPM or Node installed
-npm run dev
 ```
 
 ## Usage
 
 ```bash
+# install dependencies
 npm install
+
+# to connect to a local dev server. If you want this, you will need to locally run cli-chat-server.
+npm run dev
+
+# to connect to production
 npm start
 ```
 
