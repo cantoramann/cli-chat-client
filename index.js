@@ -42,8 +42,8 @@ const enableReceivers = async (socket) => {
     // store the session details
     sessionDetails = { roomDetails, otherUser }
 
-    console.log(`You have been matched with ${otherUser.username}! You can now chat in the room ${roomDetails.roomNameDisplayed}.`)
-    console.log(`The bio of ${otherUser.username} is: ${otherUser.bio}`)
+    console.log(chalk.yellow(`\nNew match: ${otherUser.username}!`))
+    console.log(chalk.yellow(`Biography: ${otherUser.bio}\n`))
 
     // start the chat
     console.log(`\n`, chalk.yellow('----- Start chatting below -----'))
@@ -101,10 +101,23 @@ const enableReceivers = async (socket) => {
     process.exit(0)
   })
 
+  socket.on('session timeout', () => {
+    sessionDetails = null
+    console.log(chalk.yellow("\nSession limit (3 minutes) is over. Let's hope you had fun!"))
+    process.exit(0)
+  })
+
   process.on('exit', () => {
     // for consistency, send the same event, regardless of the client state.
     sessionDetails = null
     socket.emit('user left')
+  })
+
+  process.on('SIGINT', () => {
+    // for consistency, send the same event, regardless of the client state.
+    sessionDetails = null
+    socket.emit('user left')
+    process.exit(0)
   })
 }
 
