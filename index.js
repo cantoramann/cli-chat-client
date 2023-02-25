@@ -7,6 +7,8 @@ const { config } = require('./config')
 
 let sessionDetails = null
 
+let rl = null
+
 const loop = async () => {
   // check if the data file exists
   const username = generateUsername()
@@ -46,7 +48,7 @@ const enableReceivers = async (socket) => {
     // start the chat
     console.log(`\n`, chalk.yellow('----- Start chatting below -----'))
 
-    const rl = readline.createInterface({
+    rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout,
       prompt: '',
@@ -56,7 +58,7 @@ const enableReceivers = async (socket) => {
       // set the prompt to the current user input
       const userInput = rl.line
 
-      process.stdout.moveCursor(0, -1) // up one line
+      // process.stdout.moveCursor(0, -1) // up one line
       process.stdout.clearLine(1) // from cursor to end
       process.stdout.moveCursor(0, -1) // up one line
       process.stdout.clearLine(1) // from cursor to end
@@ -70,13 +72,27 @@ const enableReceivers = async (socket) => {
   })
 
   socket.on('other user left the chat', () => {
-    console.log(chalk.red('\nBad new... The other user has left the chat.'))
+    console.log(chalk.red('\nBad news... The other user has left the chat.'))
     sessionDetails = null
     process.exit(0)
   })
 
   socket.on('message arrived from other user', (message) => {
+    // copy the input in progress from the interface
+
+    const userInput = rl.line
+
+    // clear everything in the current line
+    process.stdout.clearLine(0)
+
+    // move cursor to the beginning of the line
+    readline.cursorTo(process.stdout, 0)
+
+    // log the message
     console.log(chalk.green(`${sessionDetails.otherUser.username}:`), message)
+
+    // ask for user input again
+    process.stdout.write(userInput)
   })
 
   socket.on('server is shutting down temporarily', () => {
